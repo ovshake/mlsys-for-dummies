@@ -2,7 +2,7 @@
 
 > From distributed primitives to production RLHF: A hands-on journey through ML infrastructure
 
-**[Read the Tutorial Online](https://abhishekmaiti.github.io/mlsys-for-dummies/)** | [View Source](./tutorial/)
+**[Read the Tutorial Online](https://abhishekmaiti.com/mlsys-for-dummies/)** | [View Source](./tutorial/)
 
 ---
 
