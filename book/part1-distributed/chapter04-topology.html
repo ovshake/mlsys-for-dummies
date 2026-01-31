@@ -1,0 +1,599 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>topology_inspector.py - ML Systems for Dummies</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="From distributed primitives to production RLHF: A hands-on journey through ML infrastructure">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-9f1f5231.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-defe246b.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ML Systems for Dummies</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="topology_inspectorpy"><a class="header" href="#topology_inspectorpy">topology_inspector.py</a></h1>
+<blockquote>
+<p>Inspect your GPU topology and understand communication paths</p>
+</blockquote>
+<p>This script examines your GPU setup and reports on NVLink connections, PCIe topology, and NUMA affinity.</p>
+<h2 id="what-it-does"><a class="header" href="#what-it-does">What It Does</a></h2>
+<ol>
+<li>Detects available GPUs and their properties</li>
+<li>Identifies NVLink connections between GPU pairs</li>
+<li>Maps PCIe topology (bridges, switches)</li>
+<li>Shows CPU/NUMA affinity for each GPU</li>
+<li>Suggests optimal process placement</li>
+</ol>
+<h2 id="run-it"><a class="header" href="#run-it">Run It</a></h2>
+<pre><code class="language-bash">python tutorial/part1-distributed/chapter04-nccl-topology/scripts/topology_inspector.py
+</code></pre>
+<h2 id="example-output-8-gpu-dgx"><a class="header" href="#example-output-8-gpu-dgx">Example Output (8-GPU DGX)</a></h2>
+<pre><code>=== GPU Topology Inspector ===
+
+Found 8 GPUs:
+  GPU 0: NVIDIA A100-SXM4-80GB
+  GPU 1: NVIDIA A100-SXM4-80GB
+  ...
+
+NVLink Connections:
+  GPU 0 &lt;--NV12--&gt; GPU 1
+  GPU 0 &lt;--NV12--&gt; GPU 2
+  GPU 0 &lt;--NV12--&gt; GPU 3
+  ...
+
+PCIe Topology:
+  GPU 0-3: Same PCIe switch (fast)
+  GPU 4-7: Same PCIe switch (fast)
+  GPU 0-4: Cross-switch (slower)
+
+NUMA Affinity:
+  GPU 0-3: NUMA node 0 (CPUs 0-31)
+  GPU 4-7: NUMA node 1 (CPUs 32-63)
+
+Recommendations:
+  - For 4-GPU jobs, use GPUs 0-3 or 4-7 (same switch)
+  - For 8-GPU jobs, expect ~10% overhead from cross-switch communication
+</code></pre>
+<h2 id="why-this-matters"><a class="header" href="#why-this-matters">Why This Matters</a></h2>
+<p>Understanding topology helps you:</p>
+<ul>
+<li><strong>Place processes optimally</strong> - Keep communicating processes on fast interconnects</li>
+<li><strong>Debug performance issues</strong> - Unexpectedly slow? Check if you’re using PCIe instead of NVLink</li>
+<li><strong>Choose parallelism strategy</strong> - Tensor parallel works best with NVLink</li>
+</ul>
+<h2 id="source-code"><a class="header" href="#source-code">Source Code</a></h2>
+<pre><code class="language-python">#!/usr/bin/env python3
+"""
+GPU Topology Inspector
+
+This script inspects your GPU topology and provides insights about:
+- Number of GPUs and their properties
+- NVLink connections between GPUs
+- PCIe topology
+- NUMA affinity
+- Recommended process placement
+
+Usage:
+    python topology_inspector.py
+
+Note: This requires NVIDIA GPUs. On systems without GPUs, it will
+display a simulated topology for educational purposes.
+"""
+
+import os
+import subprocess
+import sys
+from typing import Dict, List, Optional, Tuple
+
+
+def check_nvidia_smi() -&gt; bool:
+    """Check if nvidia-smi is available."""
+    try:
+        subprocess.run(
+            ["nvidia-smi", "--version"],
+            capture_output=True,
+            check=True
+        )
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+
+
+def get_gpu_count() -&gt; int:
+    """Get the number of GPUs."""
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "-L"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return len(result.stdout.strip().split('\n'))
+    except:
+        return 0
+
+
+def get_gpu_info() -&gt; List[Dict]:
+    """Get detailed GPU information."""
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "--query-gpu=index,name,memory.total,pci.bus_id",
+             "--format=csv,noheader,nounits"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        gpus = []
+        for line in result.stdout.strip().split('\n'):
+            parts = [p.strip() for p in line.split(',')]
+            if len(parts) &gt;= 4:
+                gpus.append({
+                    'index': int(parts[0]),
+                    'name': parts[1],
+                    'memory_mb': int(parts[2]),
+                    'pci_bus': parts[3]
+                })
+        return gpus
+    except:
+        return []
+
+
+def get_topology_matrix() -&gt; Optional[str]:
+    """Get the GPU topology matrix from nvidia-smi."""
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "topo", "-m"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout
+    except:
+        return None
+
+
+def get_nvlink_status() -&gt; Optional[str]:
+    """Get NVLink status for GPU 0."""
+    try:
+        result = subprocess.run(
+            ["nvidia-smi", "nvlink", "--status", "-i", "0"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout
+    except:
+        return None
+
+
+def parse_topology_matrix(matrix_str: str) -&gt; Dict[Tuple[int, int], str]:
+    """Parse topology matrix into a dict of GPU pairs to connection types."""
+    connections = {}
+    lines = matrix_str.strip().split('\n')
+
+    # Find the header line with GPU columns
+    header_idx = None
+    for i, line in enumerate(lines):
+        if 'GPU0' in line or 'GPU 0' in line:
+            header_idx = i
+            break
+
+    if header_idx is None:
+        return connections
+
+    # Parse the matrix
+    for line in lines[header_idx + 1:]:
+        if not line.strip() or 'Legend' in line:
+            break
+
+        parts = line.split()
+        if not parts or not parts[0].startswith('GPU'):
+            continue
+
+        try:
+            gpu_from = int(parts[0].replace('GPU', ''))
+            for col_idx, conn in enumerate(parts[1:]):
+                if conn in ['X', 'NV1', 'NV2', 'NV3', 'NV4', 'NV5', 'NV6',
+                           'NV7', 'NV8', 'NV12', 'NV18', 'SYS', 'NODE',
+                           'PHB', 'PXB', 'PIX']:
+                    connections[(gpu_from, col_idx)] = conn
+        except (ValueError, IndexError):
+            continue
+
+    return connections
+
+
+def print_header(title: str) -&gt; None:
+    """Print a formatted header."""
+    print("\n" + "═" * 60)
+    print(f" {title}")
+    print("═" * 60)
+
+
+def print_simulated_topology() -&gt; None:
+    """Print a simulated topology for educational purposes."""
+    print_header("SIMULATED GPU TOPOLOGY (No GPUs Detected)")
+
+    print("""
+This is a simulated DGX-A100 topology for educational purposes.
+
+In a real DGX-A100 with 8 A100 GPUs:
+
+        GPU0    GPU1    GPU2    GPU3    GPU4    GPU5    GPU6    GPU7
+GPU0     X      NV12    NV12    NV12    NV12    NV12    NV12    NV12
+GPU1    NV12     X      NV12    NV12    NV12    NV12    NV12    NV12
+GPU2    NV12    NV12     X      NV12    NV12    NV12    NV12    NV12
+GPU3    NV12    NV12    NV12     X      NV12    NV12    NV12    NV12
+GPU4    NV12    NV12    NV12    NV12     X      NV12    NV12    NV12
+GPU5    NV12    NV12    NV12    NV12    NV12     X      NV12    NV12
+GPU6    NV12    NV12    NV12    NV12    NV12    NV12     X      NV12
+GPU7    NV12    NV12    NV12    NV12    NV12    NV12    NV12     X
+
+Legend:
+  X    = Self
+  NV#  = Connected via NVLink (# = number of links)
+  SYS  = Connected via PCIe across NUMA nodes (slowest)
+  NODE = Same NUMA node, connected via PCIe
+  PHB  = Same PCIe host bridge
+  PXB  = Different PCIe bridges, same PCIe switch
+  PIX  = Same PCIe switch
+
+Performance implications:
+  NV12 (12 NVLinks): ~300 GB/s bidirectional
+  SYS:               ~12 GB/s (PCIe 4.0 x16 through CPU)
+
+This shows why NVLink matters: 25x higher bandwidth!
+""")
+
+
+def analyze_topology(connections: Dict[Tuple[int, int], str], num_gpus: int) -&gt; None:
+    """Analyze and report on the topology."""
+    print_header("TOPOLOGY ANALYSIS")
+
+    # Count NVLink connections
+    nvlink_pairs = []
+    pcie_pairs = []
+
+    for (g1, g2), conn in connections.items():
+        if g1 &lt; g2:  # Avoid double counting
+            if conn.startswith('NV'):
+                nvlink_pairs.append((g1, g2, conn))
+            elif conn in ['SYS', 'NODE', 'PHB', 'PXB', 'PIX']:
+                pcie_pairs.append((g1, g2, conn))
+
+    print(f"\nNVLink Connections ({len(nvlink_pairs)} pairs):")
+    if nvlink_pairs:
+        for g1, g2, conn in sorted(nvlink_pairs):
+            num_links = conn.replace('NV', '')
+            print(f"  GPU{g1} &lt;-&gt; GPU{g2}: {conn} ({num_links} links)")
+    else:
+        print("  None detected")
+
+    print(f"\nPCIe-only Connections ({len(pcie_pairs)} pairs):")
+    if pcie_pairs:
+        for g1, g2, conn in sorted(pcie_pairs):
+            print(f"  GPU{g1} &lt;-&gt; GPU{g2}: {conn}")
+    else:
+        print("  None (all pairs have NVLink)")
+
+    # Recommendations
+    print_header("RECOMMENDATIONS")
+
+    if len(nvlink_pairs) == (num_gpus * (num_gpus - 1)) // 2:
+        print("✓ All GPU pairs connected via NVLink")
+        print("  → Ideal for all-reduce operations")
+        print("  → Can use any GPU grouping")
+    elif nvlink_pairs:
+        print("⚠ Mixed NVLink/PCIe topology")
+        print("  → Group NVLink-connected GPUs together when possible")
+        print("  → Use process groups to exploit fast connections")
+    else:
+        print("⚠ No NVLink detected")
+        print("  → Performance will be limited by PCIe bandwidth")
+        print("  → Consider using smaller batch sizes to hide communication")
+
+
+def main():
+    print("╔" + "═" * 58 + "╗")
+    print("║" + " GPU TOPOLOGY INSPECTOR".center(58) + "║")
+    print("╚" + "═" * 58 + "╝")
+
+    # Check if we have nvidia-smi
+    if not check_nvidia_smi():
+        print("\n[INFO] nvidia-smi not found. Showing simulated topology.")
+        print_simulated_topology()
+        return
+
+    # Get GPU count
+    num_gpus = get_gpu_count()
+    if num_gpus == 0:
+        print("\n[INFO] No NVIDIA GPUs detected. Showing simulated topology.")
+        print_simulated_topology()
+        return
+
+    # Get GPU information
+    print_header("GPU INFORMATION")
+    gpus = get_gpu_info()
+    for gpu in gpus:
+        print(f"\nGPU {gpu['index']}: {gpu['name']}")
+        print(f"  Memory: {gpu['memory_mb']} MB")
+        print(f"  PCI Bus: {gpu['pci_bus']}")
+
+    # Get topology matrix
+    print_header("TOPOLOGY MATRIX")
+    topo_matrix = get_topology_matrix()
+    if topo_matrix:
+        print(topo_matrix)
+        connections = parse_topology_matrix(topo_matrix)
+        analyze_topology(connections, num_gpus)
+    else:
+        print("Could not retrieve topology matrix")
+
+    # Get NVLink status
+    nvlink_status = get_nvlink_status()
+    if nvlink_status and "NVLINK" not in nvlink_status:
+        print_header("NVLINK STATUS (GPU 0)")
+        print(nvlink_status)
+
+    # PyTorch CUDA information
+    print_header("PYTORCH CUDA INFO")
+    try:
+        import torch
+        if torch.cuda.is_available():
+            print(f"PyTorch version: {torch.__version__}")
+            print(f"CUDA version: {torch.version.cuda}")
+            print(f"cuDNN version: {torch.backends.cudnn.version()}")
+            print(f"GPU count (torch): {torch.cuda.device_count()}")
+
+            for i in range(torch.cuda.device_count()):
+                props = torch.cuda.get_device_properties(i)
+                print(f"\nGPU {i}: {props.name}")
+                print(f"  Compute capability: {props.major}.{props.minor}")
+                print(f"  Total memory: {props.total_memory / 1e9:.1f} GB")
+                print(f"  Multi-processor count: {props.multi_processor_count}")
+        else:
+            print("PyTorch CUDA not available")
+    except ImportError:
+        print("PyTorch not installed")
+
+    # Summary
+    print_header("QUICK REFERENCE")
+    print("""
+NCCL Environment Variables for Tuning:
+  NCCL_DEBUG=INFO           Show what NCCL is doing
+  NCCL_ALGO=Ring            Force ring algorithm
+  NCCL_ALGO=Tree            Force tree algorithm
+  NCCL_NTHREADS=256         Set thread count
+  NCCL_P2P_DISABLE=1        Disable peer-to-peer (for debugging)
+
+Common Commands:
+  nvidia-smi topo -m        Show topology matrix
+  nvidia-smi nvlink --status Show NVLink connections
+  nvidia-smi -q -d MEMORY   Show memory usage details
+""")
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../part1-distributed/chapter04.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../part1-distributed/chapter04-benchmark.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../part1-distributed/chapter04.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../part1-distributed/chapter04-benchmark.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

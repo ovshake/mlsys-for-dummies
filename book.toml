@@ -1,0 +1,26 @@
+[book]
+title = "ML Systems for Dummies"
+authors = ["Abhishek Maiti"]
+description = "From distributed primitives to production RLHF: A hands-on journey through ML infrastructure"
+language = "en"
+src = "src"
+
+[build]
+build-dir = "book"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/abhishekmaiti/mlsys-for-dummies"
+site-url = "/"
+no-section-label = false
+additional-css = ["theme/custom.css"]
+
+[output.html.search]
+enable = true
+limit-results = 20
+use-hierarchical-keys = true
+
+[output.html.fold]
+enable = true
+level = 1

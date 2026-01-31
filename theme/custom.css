@@ -1,0 +1,150 @@
+/* ML Systems Tutorial - Custom Theme
+   Optimized for technical content with ASCII diagrams and code */
+
+/* Ensure ASCII diagrams and code blocks render with monospace */
+pre, code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+}
+
+pre code {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Better table styling for data tables */
+table {
+    width: 100%;
+    margin: 1.5em 0;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--table-border-color);
+}
+
+th {
+    font-weight: 600;
+    background-color: var(--table-header-bg);
+}
+
+/* Alternate row colors for readability */
+tr:nth-child(even) {
+    background-color: var(--table-alternate-bg);
+}
+
+/* Chapter epigraphs (blockquotes at start of chapters) */
+blockquote {
+    font-style: italic;
+    border-left: 4px solid var(--quote-border);
+    margin: 1.5em 0;
+    padding: 0.5em 1em;
+    background-color: var(--quote-bg);
+}
+
+blockquote em {
+    font-style: normal;
+}
+
+/* Improve spacing for headings */
+h1 {
+    margin-top: 0;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 2px solid var(--quote-border);
+}
+
+h2 {
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+}
+
+h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+/* Learning objectives and key takeaways boxes */
+h2 + ul,
+h3 + ul {
+    margin-top: 0.5em;
+}
+
+/* Make collapsible sections (details) more visible */
+details {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    background-color: var(--quote-bg);
+    border-radius: 4px;
+}
+
+details summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0.5em 0;
+}
+
+details[open] summary {
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid var(--table-border-color);
+}
+
+/* Exercise sections */
+h3:has(+ p, + ol) {
+    color: var(--links);
+}
+
+/* Inline code styling */
+p code, li code {
+    padding: 0.2em 0.4em;
+    background-color: var(--inline-code-color);
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+/* Improve readability of long content */
+.content main {
+    max-width: 900px;
+}
+
+/* Better link visibility */
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Navigation improvements */
+.chapter li.chapter-item {
+    margin: 0.3em 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    pre code {
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 8px 12px;
+    }
+
+    table {
+        font-size: 0.9em;
+    }
+}
+
+/* Print styles */
+@media print {
+    pre code {
+        font-size: 11px;
+    }
+
+    .sidebar,
+    .nav-chapters {
+        display: none;
+    }
+}

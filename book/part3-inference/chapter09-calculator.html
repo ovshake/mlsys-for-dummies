@@ -1,0 +1,596 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>kv_cache_calculator.py - ML Systems for Dummies</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="From distributed primitives to production RLHF: A hands-on journey through ML infrastructure">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-9f1f5231.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-defe246b.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ML Systems for Dummies</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="kv_cache_calculatorpy"><a class="header" href="#kv_cache_calculatorpy">kv_cache_calculator.py</a></h1>
+<blockquote>
+<p>Calculate KV cache memory requirements for any model</p>
+</blockquote>
+<p>This script helps you understand how much memory your KV cache will consume and plan your deployment accordingly.</p>
+<h2 id="what-it-does"><a class="header" href="#what-it-does">What It Does</a></h2>
+<ol>
+<li>Takes model parameters (layers, heads, head_dim, dtype)</li>
+<li>Calculates KV cache size per token</li>
+<li>Estimates memory for different context lengths</li>
+<li>Shows concurrent request capacity</li>
+</ol>
+<h2 id="run-it"><a class="header" href="#run-it">Run It</a></h2>
+<pre><code class="language-bash">python tutorial/part3-inference/chapter09-kv-cache/scripts/kv_cache_calculator.py
+</code></pre>
+<h2 id="example-output"><a class="header" href="#example-output">Example Output</a></h2>
+<pre><code>=== KV Cache Calculator ===
+
+Model: LLaMA-70B
+  Layers: 80
+  KV Heads: 8 (GQA)
+  Head Dim: 128
+  Dtype: FP16
+
+KV Cache Size:
+  Per token: 320 KB
+  Per request (4K context): 1.28 GB
+  Per request (32K context): 10.24 GB
+
+With 80 GB GPU Memory:
+  Model weights (FP16): 140 GB (requires 2+ GPUs)
+  After weights on 8x H100: ~480 GB available
+
+  Max concurrent requests:
+    At 4K context: 375 requests
+    At 8K context: 187 requests
+    At 32K context: 46 requests
+
+Warning: Long context dramatically reduces concurrency!
+</code></pre>
+<h2 id="the-formula"><a class="header" href="#the-formula">The Formula</a></h2>
+<pre><code>kv_bytes_per_token = 2 × layers × kv_heads × head_dim × dtype_bytes
+                     ↑   ↑                             ↑
+                     K+V layers                        2 for FP16
+</code></pre>
+<h2 id="source-code"><a class="header" href="#source-code">Source Code</a></h2>
+<pre><code class="language-python">#!/usr/bin/env python3
+"""
+KV Cache Calculator
+
+Calculate KV cache memory requirements for different LLM configurations.
+This helps understand memory constraints and capacity planning.
+
+Usage:
+    python kv_cache_calculator.py
+    python kv_cache_calculator.py --model llama-70b
+    python kv_cache_calculator.py --custom --layers 80 --heads 64 --dim 128
+"""
+
+import argparse
+from dataclasses import dataclass
+from typing import Dict
+
+
+@dataclass
+class ModelConfig:
+    """Model configuration for KV cache calculation."""
+    name: str
+    num_layers: int
+    num_kv_heads: int  # KV heads (may differ from attention heads with GQA)
+    head_dim: int
+    vocab_size: int = 128000
+
+    @property
+    def kv_bytes_per_token(self) -&gt; int:
+        """Calculate KV cache bytes per token (for FP16)."""
+        # K and V for each layer
+        return 2 * self.num_layers * self.num_kv_heads * self.head_dim * 2  # 2 bytes for FP16
+
+
+# Common model configurations
+MODELS = {
+    "llama-7b": ModelConfig("LLaMA-7B", num_layers=32, num_kv_heads=32, head_dim=128),
+    "llama-13b": ModelConfig("LLaMA-13B", num_layers=40, num_kv_heads=40, head_dim=128),
+    "llama-70b": ModelConfig("LLaMA-70B", num_layers=80, num_kv_heads=8, head_dim=128),  # GQA
+    "mistral-7b": ModelConfig("Mistral-7B", num_layers=32, num_kv_heads=8, head_dim=128),  # GQA
+    "qwen-72b": ModelConfig("Qwen-72B", num_layers=80, num_kv_heads=8, head_dim=128),
+    "deepseek-67b": ModelConfig("DeepSeek-67B", num_layers=95, num_kv_heads=8, head_dim=128),
+}
+
+
+def format_bytes(bytes_val: float) -&gt; str:
+    """Format bytes into human-readable string."""
+    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+        if bytes_val &lt; 1024:
+            return f"{bytes_val:.2f} {unit}"
+        bytes_val /= 1024
+    return f"{bytes_val:.2f} PB"
+
+
+def calculate_kv_cache(model: ModelConfig, context_lengths: list,
+                       dtype_bytes: int = 2) -&gt; Dict:
+    """Calculate KV cache requirements."""
+    kv_per_token = (2 * model.num_layers * model.num_kv_heads *
+                    model.head_dim * dtype_bytes)
+
+    results = {
+        'model': model.name,
+        'layers': model.num_layers,
+        'kv_heads': model.num_kv_heads,
+        'head_dim': model.head_dim,
+        'kv_bytes_per_token': kv_per_token,
+        'contexts': {}
+    }
+
+    for ctx_len in context_lengths:
+        kv_per_request = kv_per_token * ctx_len
+        results['contexts'][ctx_len] = {
+            'per_request': kv_per_request,
+            'per_request_formatted': format_bytes(kv_per_request),
+        }
+
+    return results
+
+
+def analyze_capacity(model: ModelConfig, gpu_memory_gb: float,
+                     model_size_gb: float, context_length: int,
+                     dtype_bytes: int = 2) -&gt; Dict:
+    """Analyze how many concurrent requests can be served."""
+    # Available memory for KV cache
+    overhead_gb = 2  # CUDA kernels, activations, etc.
+    available_gb = gpu_memory_gb - model_size_gb - overhead_gb
+
+    if available_gb &lt;= 0:
+        return {
+            'error': 'Model does not fit in GPU memory',
+            'available_gb': available_gb,
+        }
+
+    # KV cache per request
+    kv_per_token = (2 * model.num_layers * model.num_kv_heads *
+                    model.head_dim * dtype_bytes)
+    kv_per_request = kv_per_token * context_length
+    kv_per_request_gb = kv_per_request / (1024 ** 3)
+
+    # Max concurrent requests
+    max_requests = int(available_gb / kv_per_request_gb)
+
+    # With PagedAttention (assuming 95% utilization vs 50% without)
+    requests_without_paging = int(max_requests * 0.5)  # 50% utilization
+    requests_with_paging = int(max_requests * 0.95)    # 95% utilization
+
+    return {
+        'gpu_memory_gb': gpu_memory_gb,
+        'model_size_gb': model_size_gb,
+        'available_for_kv_gb': available_gb,
+        'context_length': context_length,
+        'kv_per_request_gb': kv_per_request_gb,
+        'max_theoretical_requests': max_requests,
+        'requests_without_paging': requests_without_paging,
+        'requests_with_paging': requests_with_paging,
+        'paging_improvement': f"{(requests_with_paging / requests_without_paging - 1) * 100:.0f}%"
+    }
+
+
+def compare_fragmentation(model: ModelConfig, requests: int,
+                          avg_context: int, max_context: int,
+                          dtype_bytes: int = 2) -&gt; Dict:
+    """Compare memory usage with and without paging."""
+    kv_per_token = (2 * model.num_layers * model.num_kv_heads *
+                    model.head_dim * dtype_bytes)
+
+    # Without paging: allocate max_context for each request
+    memory_without_paging = requests * max_context * kv_per_token
+
+    # With paging: only allocate what's actually used
+    memory_with_paging = requests * avg_context * kv_per_token
+
+    waste = memory_without_paging - memory_with_paging
+    waste_pct = (waste / memory_without_paging) * 100
+
+    return {
+        'requests': requests,
+        'avg_context': avg_context,
+        'max_context': max_context,
+        'memory_without_paging': format_bytes(memory_without_paging),
+        'memory_with_paging': format_bytes(memory_with_paging),
+        'memory_wasted': format_bytes(waste),
+        'waste_percentage': f"{waste_pct:.1f}%",
+    }
+
+
+def print_model_comparison():
+    """Print KV cache comparison for common models."""
+    print("=" * 70)
+    print(" KV CACHE SIZE COMPARISON ACROSS MODELS")
+    print("=" * 70)
+
+    context_lengths = [2048, 4096, 8192, 32768, 131072]
+
+    print(f"\n{'Model':&lt;15} {'Layers':&lt;8} {'KV Heads':&lt;10} "
+          f"{'Per Token':&lt;12} {'@ 8K ctx':&lt;12} {'@ 32K ctx':&lt;12}")
+    print("-" * 70)
+
+    for name, model in MODELS.items():
+        results = calculate_kv_cache(model, context_lengths)
+        per_token = format_bytes(results['kv_bytes_per_token'])
+        at_8k = results['contexts'][8192]['per_request_formatted']
+        at_32k = results['contexts'][32768]['per_request_formatted']
+
+        print(f"{model.name:&lt;15} {model.num_layers:&lt;8} {model.num_kv_heads:&lt;10} "
+              f"{per_token:&lt;12} {at_8k:&lt;12} {at_32k:&lt;12}")
+
+
+def print_capacity_analysis(model_name: str, gpu_config: str):
+    """Print capacity analysis for a specific configuration."""
+    model = MODELS.get(model_name.lower())
+    if not model:
+        print(f"Unknown model: {model_name}")
+        return
+
+    # GPU configurations
+    gpu_configs = {
+        "h100": (80, "H100 80GB"),
+        "a100": (80, "A100 80GB"),
+        "a100-40": (40, "A100 40GB"),
+        "4090": (24, "RTX 4090 24GB"),
+    }
+
+    # Model sizes (approximate, FP16)
+    model_sizes = {
+        "llama-7b": 14,
+        "llama-13b": 26,
+        "llama-70b": 140,
+        "mistral-7b": 14,
+        "qwen-72b": 144,
+        "deepseek-67b": 134,
+    }
+
+    gpu_memory, gpu_name = gpu_configs.get(gpu_config, (80, "Custom"))
+    model_size = model_sizes.get(model_name.lower(), 14)
+
+    print("\n" + "=" * 70)
+    print(f" CAPACITY ANALYSIS: {model.name} on {gpu_name}")
+    print("=" * 70)
+
+    for context_len in [2048, 4096, 8192, 32768]:
+        capacity = analyze_capacity(model, gpu_memory, model_size, context_len)
+
+        if 'error' in capacity:
+            print(f"\n@ {context_len} context: {capacity['error']}")
+            continue
+
+        print(f"\n@ {context_len} context length:")
+        print(f"  Available for KV cache: {capacity['available_for_kv_gb']:.1f} GB")
+        print(f"  KV per request: {capacity['kv_per_request_gb']:.2f} GB")
+        print(f"  Without PagedAttention: ~{capacity['requests_without_paging']} concurrent requests")
+        print(f"  With PagedAttention: ~{capacity['requests_with_paging']} concurrent requests")
+        print(f"  Improvement: {capacity['paging_improvement']}")
+
+
+def print_fragmentation_analysis(model_name: str):
+    """Show memory fragmentation with and without paging."""
+    model = MODELS.get(model_name.lower())
+    if not model:
+        print(f"Unknown model: {model_name}")
+        return
+
+    print("\n" + "=" * 70)
+    print(f" FRAGMENTATION ANALYSIS: {model.name}")
+    print("=" * 70)
+
+    scenarios = [
+        (100, 512, 8192, "Short prompts, 8K max"),
+        (50, 2048, 8192, "Medium prompts, 8K max"),
+        (20, 4096, 32768, "Long prompts, 32K max"),
+        (10, 8192, 131072, "Very long, 128K max"),
+    ]
+
+    for requests, avg_ctx, max_ctx, desc in scenarios:
+        frag = compare_fragmentation(model, requests, avg_ctx, max_ctx)
+
+        print(f"\nScenario: {desc}")
+        print(f"  Requests: {requests}, Avg context: {avg_ctx}, Max context: {max_ctx}")
+        print(f"  Without paging: {frag['memory_without_paging']}")
+        print(f"  With paging: {frag['memory_with_paging']}")
+        print(f"  Memory saved: {frag['memory_wasted']} ({frag['waste_percentage']} reduction)")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="KV Cache Calculator")
+    parser.add_argument("--model", "-m", type=str, default="llama-70b",
+                        choices=list(MODELS.keys()),
+                        help="Model to analyze")
+    parser.add_argument("--gpu", "-g", type=str, default="h100",
+                        choices=["h100", "a100", "a100-40", "4090"],
+                        help="GPU type")
+    parser.add_argument("--custom", action="store_true",
+                        help="Use custom model config")
+    parser.add_argument("--layers", type=int, default=80,
+                        help="Number of layers (with --custom)")
+    parser.add_argument("--heads", type=int, default=8,
+                        help="Number of KV heads (with --custom)")
+    parser.add_argument("--dim", type=int, default=128,
+                        help="Head dimension (with --custom)")
+    args = parser.parse_args()
+
+    print("╔" + "═" * 68 + "╗")
+    print("║" + " KV CACHE CALCULATOR".center(68) + "║")
+    print("╚" + "═" * 68 + "╝")
+
+    if args.custom:
+        custom_model = ModelConfig(
+            "Custom",
+            num_layers=args.layers,
+            num_kv_heads=args.heads,
+            head_dim=args.dim
+        )
+        MODELS["custom"] = custom_model
+        args.model = "custom"
+
+    # Model comparison
+    print_model_comparison()
+
+    # Capacity analysis
+    print_capacity_analysis(args.model, args.gpu)
+
+    # Fragmentation analysis
+    print_fragmentation_analysis(args.model)
+
+    # Key insights
+    print("\n" + "=" * 70)
+    print(" KEY INSIGHTS")
+    print("=" * 70)
+    print("""
+1. KV CACHE DOMINATES MEMORY
+   - For long contexts, KV cache &gt;&gt; model weights
+   - 70B model @ 32K context: 140GB weights vs ~10GB KV per request
+
+2. GQA DRAMATICALLY REDUCES KV CACHE
+   - LLaMA-70B uses 8 KV heads (vs 64 attention heads)
+   - 8x smaller KV cache per token!
+
+3. PAGEDATTENTION NEARLY DOUBLES CAPACITY
+   - Eliminates internal fragmentation
+   - 95% utilization vs ~50% without paging
+
+4. CONTEXT LENGTH IS THE KILLER
+   - 32K context: ~47 concurrent requests
+   - 128K context: ~12 concurrent requests
+   - Same GPU, same model!
+
+5. QUANTIZED KV CACHE HELPS
+   - FP8 KV cache: 2x more requests
+   - INT8 KV cache: similar benefits
+   - Some quality trade-off
+""")
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../part3-inference/chapter09.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../part3-inference/chapter09-prefix.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../part3-inference/chapter09.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../part3-inference/chapter09-prefix.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

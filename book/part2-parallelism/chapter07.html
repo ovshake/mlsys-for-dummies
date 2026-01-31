@@ -1,0 +1,454 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chapter 7: Pipeline &amp; Expert Parallelism - ML Systems for Dummies</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="From distributed primitives to production RLHF: A hands-on journey through ML infrastructure">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-9f1f5231.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-defe246b.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ML Systems for Dummies</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="chapter-7-pipeline-and-expert-parallelism"><a class="header" href="#chapter-7-pipeline-and-expert-parallelism">Chapter 7: Pipeline and Expert Parallelism</a></h1>
+<blockquote>
+<p><em>“When one GPU can’t hold one layer (TP), we split layers. When it can’t hold all layers (PP), we split the model vertically.”</em></p>
+</blockquote>
+<h2 id="learning-objectives"><a class="header" href="#learning-objectives">Learning Objectives</a></h2>
+<p>By the end of this chapter, you will be able to:</p>
+<ul>
+<li>Explain how pipeline parallelism splits models across GPUs</li>
+<li>Implement 1F1B scheduling for efficient pipeline execution</li>
+<li>Understand Mixture-of-Experts (MoE) and Expert Parallelism</li>
+<li>Calculate the optimal parallelism strategy for a given model</li>
+</ul>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<ul>
+<li>Completed <a href="./chapter05.html">Chapters 5-6</a> (Data and Tensor Parallelism)</li>
+<li>Understanding of transformer architecture</li>
+<li>Basic knowledge of GPU memory hierarchy</li>
+</ul>
+<h2 id="concept-overview"><a class="header" href="#concept-overview">Concept Overview</a></h2>
+<h3 id="pipeline-parallelism-splitting-by-layers"><a class="header" href="#pipeline-parallelism-splitting-by-layers">Pipeline Parallelism: Splitting by Layers</a></h3>
+<p>While tensor parallelism splits individual layers horizontally, <strong>pipeline parallelism</strong> splits the model vertically—each GPU holds a contiguous group of layers.</p>
+<pre><code>Full Model: [Embed] [Layer 0-5] [Layer 6-11] [Layer 12-17] [Layer 18-23] [Head]
+                ↓         ↓           ↓            ↓            ↓         ↓
+Pipeline:   ┌──────┐ ┌──────┐   ┌──────┐    ┌──────┐    ┌──────┐   ┌──────┐
+            │GPU 0 │ │GPU 1 │   │GPU 2 │    │GPU 3 │    │GPU 4 │   │GPU 5 │
+            │Stage 0│ │Stage 1│  │Stage 2│   │Stage 3│   │Stage 4│  │Stage 5│
+            └──────┘ └──────┘   └──────┘    └──────┘    └──────┘   └──────┘
+</code></pre>
+<p>Communication: Activations flow forward, gradients flow backward (point-to-point <code>send</code>/<code>recv</code>).</p>
+<h3 id="the-pipeline-bubble-problem"><a class="header" href="#the-pipeline-bubble-problem">The Pipeline Bubble Problem</a></h3>
+<p>Naive pipeline execution has a fatal flaw: <strong>bubbles</strong>.</p>
+<pre><code>Time →
+GPU 0: [F0] [F1] [F2] [F3] [B3] [B2] [B1] [B0]
+GPU 1:      [F0] [F1] [F2] [F3] [B3] [B2] [B1] [B0]
+GPU 2:           [F0] [F1] [F2] [F3] [B3] [B2] [B1] [B0]
+GPU 3:                [F0] [F1] [F2] [F3] [B3] [B2] [B1] [B0]
+
+Bubbles = empty time where GPUs are idle
+</code></pre>
+<p><strong>Bubble fraction</strong> = (P-1) / (M + P - 1), where P = pipeline stages, M = microbatches.</p>
+<p>For P=4, M=4: Bubble = 3/7 = 43% wasted time!</p>
+<h3 id="1f1b-scheduling-the-solution"><a class="header" href="#1f1b-scheduling-the-solution">1F1B Scheduling: The Solution</a></h3>
+<p><strong>1F1B</strong> (One Forward, One Backward) interleaves forward and backward passes to reduce bubbles:</p>
+<pre><code>Time →
+GPU 0: [F0] [F1] [F2] [F3] [B0] [F4] [B1] [F5] [B2] [B3]
+GPU 1:      [F0] [F1] [F2] [B0] [F3] [B1] [F4] [B2] [B3]
+GPU 2:           [F0] [F1] [B0] [F2] [B1] [F3] [B2] [B3]
+GPU 3:                [F0] [B0] [F1] [B1] [F2] [B2] [F3] [B3]
+</code></pre>
+<p>Key insight: Once the pipeline is “full,” each GPU does one forward then one backward, keeping memory constant.</p>
+<h3 id="memory-in-pipeline-parallelism"><a class="header" href="#memory-in-pipeline-parallelism">Memory in Pipeline Parallelism</a></h3>
+<p>Each GPU stores:</p>
+<ul>
+<li>Model parameters for its stages</li>
+<li>Activations from forward pass (needed for backward)</li>
+</ul>
+<p><strong>1F1B memory advantage</strong>: Only need to store activations for <code>P</code> microbatches, not <code>M</code>.</p>
+<h3 id="mixture-of-experts-moe"><a class="header" href="#mixture-of-experts-moe">Mixture of Experts (MoE)</a></h3>
+<p>MoE replaces the standard FFN with multiple “expert” FFNs:</p>
+<pre><code>Standard FFN:
+    Input → FFN → Output
+
+MoE FFN:
+    Input → Router → Expert 0 →
+                   → Expert 1 → Weighted Sum → Output
+                   → Expert 2 →
+                   → Expert 3 →
+</code></pre>
+<p>The <strong>router</strong> (a small neural network) decides which experts process each token. Typically, only top-K experts (K=1 or 2) are activated per token.</p>
+<p><strong>Why MoE?</strong></p>
+<ul>
+<li>More parameters without more FLOPs</li>
+<li>Each token only activates a fraction of parameters</li>
+<li>DeepSeek-V3: 671B parameters but only 37B activated per token!</li>
+</ul>
+<h3 id="expert-parallelism-ep"><a class="header" href="#expert-parallelism-ep">Expert Parallelism (EP)</a></h3>
+<p>When you have 64+ experts, they don’t fit on one GPU. <strong>Expert Parallelism</strong> distributes experts across GPUs:</p>
+<pre><code>              Token Routing
+                   │
+        ┌──────────┼──────────┐
+        ▼          ▼          ▼
+    ┌───────┐  ┌───────┐  ┌───────┐
+    │ GPU 0 │  │ GPU 1 │  │ GPU 2 │
+    │E0,E1,E2│ │E3,E4,E5│ │E6,E7,E8│
+    └───────┘  └───────┘  └───────┘
+        │          │          │
+        └──────────┴──────────┘
+              All-to-All
+              (collect results)
+</code></pre>
+<p>Communication pattern: <strong>All-to-All</strong> (each GPU sends tokens to the GPUs hosting the selected experts).</p>
+<h3 id="ep-vs-tp-a-critical-comparison"><a class="header" href="#ep-vs-tp-a-critical-comparison">EP vs TP: A Critical Comparison</a></h3>
+<p>For MoE models, EP is often better than TP:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Aspect</th><th>Tensor Parallelism</th><th>Expert Parallelism</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>What’s split</strong></td><td>Each expert matrix</td><td>Whole experts</td></tr>
+<tr><td><strong>Communication</strong></td><td>2 all-reduce per layer</td><td>2 all-to-all per layer</td></tr>
+<tr><td><strong>Volume</strong></td><td>2 × batch × seq × hidden</td><td>2 × k × batch × seq × hidden / N</td></tr>
+<tr><td><strong>Compute efficiency</strong></td><td>Low (small GEMMs)</td><td>High (full expert GEMMs)</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>Key insight</strong>: TP slices already small expert matrices, making GEMMs inefficient. EP keeps expert matrices whole.</p>
+<h3 id="communication-volume-deep-dive"><a class="header" href="#communication-volume-deep-dive">Communication Volume Deep Dive</a></h3>
+<p>For TP with degree T on an MoE layer:</p>
+<pre><code>Volume = 2S (all-reduce, activations of size S)
+</code></pre>
+<p>For EP with N experts, k activated:</p>
+<pre><code>Volume = 2kS/N (all-to-all, only k/N of tokens go to each GPU)
+</code></pre>
+<p>When k &lt;&lt; N (sparse activation), EP wins on communication too!</p>
+<h3 id="combining-parallelisms-the-3d-approach"><a class="header" href="#combining-parallelisms-the-3d-approach">Combining Parallelisms: The 3D Approach</a></h3>
+<p>Real large-model training uses multiple parallelism strategies:</p>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                     DATA PARALLELISM                        │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │                PIPELINE PARALLELISM                   │  │
+│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐     │  │
+│  │  │TENSOR PARA- │ │TENSOR PARA- │ │TENSOR PARA- │     │  │
+│  │  │LLELISM      │ │LLELISM      │ │LLELISM      │     │  │
+│  │  │ (Stage 0)   │→│ (Stage 1)   │→│ (Stage 2)   │     │  │
+│  │  │  8 GPUs     │ │  8 GPUs     │ │  8 GPUs     │     │  │
+│  │  └─────────────┘ └─────────────┘ └─────────────┘     │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                     (Replica 0)                             │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │                      ... more replicas ...            │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<p><strong>Rule of thumb</strong>:</p>
+<ul>
+<li>TP: Within a node (needs NVLink)</li>
+<li>PP: Across nodes (lower bandwidth OK)</li>
+<li>DP: Scales indefinitely (gradient sync)</li>
+</ul>
+<h2 id="code-walkthrough"><a class="header" href="#code-walkthrough">Code Walkthrough</a></h2>
+<h3 id="script-1-pipeline_schedule_vizpy"><a class="header" href="#script-1-pipeline_schedule_vizpy">Script 1: pipeline_schedule_viz.py</a></h3>
+<p>Visualizes different pipeline schedules:</p>
+<ul>
+<li>Naive (fill-drain)</li>
+<li>1F1B</li>
+<li>Interleaved 1F1B</li>
+</ul>
+<p>Shows bubble ratios and memory usage.</p>
+<h3 id="script-2-parallel_strategy_calculatorpy"><a class="header" href="#script-2-parallel_strategy_calculatorpy">Script 2: parallel_strategy_calculator.py</a></h3>
+<p>Given model specs and hardware, calculates:</p>
+<ul>
+<li>Memory per GPU for each parallelism strategy</li>
+<li>Communication volume</li>
+<li>Recommended configuration</li>
+</ul>
+<h2 id="try-it-yourself"><a class="header" href="#try-it-yourself">Try It Yourself</a></h2>
+<h3 id="exercise-1-calculate-bubble-fraction"><a class="header" href="#exercise-1-calculate-bubble-fraction">Exercise 1: Calculate Bubble Fraction</a></h3>
+<p>For a 4-stage pipeline with 16 microbatches:</p>
+<ol>
+<li>What’s the bubble fraction with naive scheduling?</li>
+<li>How does it improve with 1F1B?</li>
+</ol>
+<h3 id="exercise-2-moe-communication-analysis"><a class="header" href="#exercise-2-moe-communication-analysis">Exercise 2: MoE Communication Analysis</a></h3>
+<p>For an MoE layer with:</p>
+<ul>
+<li>64 experts</li>
+<li>top-2 routing (k=2)</li>
+<li>4096 hidden dimension</li>
+<li>Batch of 4 × 1024 tokens</li>
+</ul>
+<p>Calculate communication volume for:</p>
+<ol>
+<li>8-way TP (splitting each expert)</li>
+<li>8-way EP (8 experts per GPU)</li>
+</ol>
+<h3 id="exercise-3-design-a-parallelism-strategy"><a class="header" href="#exercise-3-design-a-parallelism-strategy">Exercise 3: Design a Parallelism Strategy</a></h3>
+<p>You have:</p>
+<ul>
+<li>70B parameter dense model</li>
+<li>64 H100 GPUs (8 per node)</li>
+<li>80GB memory per GPU</li>
+</ul>
+<p>Design a parallelism strategy. Consider:</p>
+<ul>
+<li>Model size: ~140GB in FP16</li>
+<li>Activations and gradients</li>
+<li>Communication patterns</li>
+</ul>
+<h2 id="key-takeaways"><a class="header" href="#key-takeaways">Key Takeaways</a></h2>
+<ol>
+<li><strong>PP splits the model by layers</strong> - Point-to-point communication only</li>
+<li><strong>Bubbles are the enemy</strong> - 1F1B scheduling minimizes idle time</li>
+<li><strong>MoE = sparse activation</strong> - More parameters, same compute</li>
+<li><strong>EP beats TP for MoE</strong> - Keeps expert matrices whole</li>
+<li><strong>Combine strategies</strong> - Real systems use TP + PP + DP + EP</li>
+</ol>
+<h2 id="the-parallelism-decision-tree"><a class="header" href="#the-parallelism-decision-tree">The Parallelism Decision Tree</a></h2>
+<pre><code>Is one layer too big for one GPU?
+├─ Yes → Use Tensor Parallelism (within node)
+└─ No
+    └─ Is the full model too big for one GPU?
+       ├─ Yes → Use Pipeline Parallelism (across nodes OK)
+       │        + Use Tensor Parallelism if layers are large
+       └─ No
+           └─ Use Data Parallelism (scales indefinitely)
+
+Is the model MoE?
+├─ Yes → Add Expert Parallelism (across nodes OK)
+└─ No → Continue with above strategy
+</code></pre>
+<h2 id="whats-next"><a class="header" href="#whats-next">What’s Next?</a></h2>
+<p>In Part III, we’ll dive into <strong>LLM Inference Systems</strong>—how to efficiently serve models after training. This includes KV cache management, batching strategies, and speculative decoding.</p>
+<h2 id="further-reading"><a class="header" href="#further-reading">Further Reading</a></h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1811.06965">GPipe Paper</a></li>
+<li><a href="https://arxiv.org/abs/1806.03377">PipeDream Paper</a></li>
+<li><a href="https://arxiv.org/abs/2101.03961">Switch Transformer (MoE)</a></li>
+<li><a href="https://arxiv.org/abs/2412.19437">DeepSeek-V3 Technical Report</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../part2-parallelism/chapter06-mlp.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../part2-parallelism/chapter07-pipeline.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../part2-parallelism/chapter06-mlp.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../part2-parallelism/chapter07-pipeline.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
